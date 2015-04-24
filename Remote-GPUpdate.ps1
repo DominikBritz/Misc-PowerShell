@@ -18,11 +18,12 @@ Computerlist.txt | .\Remote-GPUpdate.ps1
 This script accepts pipeline input
 
 .OUTPUTS
-This script does not generate output
+This script does not generate an object as output
 
 .NOTES
 https://github.com/DominikBritz
 #>
+
 [CmdletBinding()]
 PARAM
 (
@@ -31,8 +32,14 @@ PARAM
     [string]$ComputerName = $env:COMPUTERNAME
 )
 
-If (Test-Connection -ComputerName $ComputerName -Count 1 -Quiet)
-{
-    Write-Output "Processing $ComputerName"
-    Invoke-WmiMethod -class Win32_process -name Create -ArgumentList "cmd.exe /c gpupdate /target:computer" -ComputerName $ComputerName | out-null
+Begin{}
+
+Process{
+    If (Test-Connection -ComputerName $ComputerName -Count 1 -Quiet)
+    {
+        Write-Output "Processing $ComputerName"
+        Invoke-WmiMethod -class Win32_process -name Create -ArgumentList "cmd.exe /c gpupdate /target:computer" -ComputerName $ComputerName | out-null
+    }
 }
+
+End{}
