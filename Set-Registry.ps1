@@ -7,7 +7,7 @@ Function Set-Registry
         $RegValue,
         $RegData,
         [ValidateSet('String','DWord','Binary','ExpandString','MultiString','None','QWord','Unknown')]
-        $RegType    
+        $RegType = 'String'    
     )
 
     If (-not $RegValue)
