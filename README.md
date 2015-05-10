@@ -1,2 +1,2 @@
-# Small-Scripts
-Small PowerShell scripts which doesn't fit into other repos
+# PowerShell
+Small PowerShell scripts and functions which doesn't fit into other repos
