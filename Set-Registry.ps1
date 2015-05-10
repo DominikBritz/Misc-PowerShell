@@ -16,7 +16,8 @@ Function Set-Registry
     .PARAMETER RegType
     The type of the registry value. Allowed types: String,DWord,Binary,ExpandString,MultiString,None,QWord,Unknown. If no type is given, the function will use String as the type.
 
-    .EXAMPLE Set-Registry -RegKey HKLM:\SomeKey -RegValue SomeValue -RegData 1111 -RegType DWord
+    .EXAMPLE 
+    Set-Registry -RegKey HKLM:\SomeKey -RegValue SomeValue -RegData 1111 -RegType DWord
     This will create the key SomeKey in HKLM:\. There it will create a value SomeValue of the type DWord with the data 1111.
 
     .NOTES
@@ -81,3 +82,4 @@ Function Set-Registry
         }
     }
 }
+
