@@ -32,19 +32,26 @@ PARAM
     [string]$ComputerName = $env:COMPUTERNAME
 )
 
-Begin{
-$Hash = @{}
+Begin
+{
+    $Hash = @{}
 }
 
-Process{
+Process
+{
     If (Test-Connection -ComputerName $ComputerName -Count 1 -Quiet)
     {
         Write-Output "Processing $ComputerName"
         $vDisk = Get-Content "\\$ComputerName\C$\Personality.ini" | % {If ($_ -match "DiskName") {(($_).split("="))[1]}}
         $Hash.Add($ComputerName,$vDisk)
     }
+    Else
+    {
+        Write-Error "Could not reach $ComputerName"
+    }
 }
 
-End{
-Write-Output $Hash
+End
+{
+    Write-Output $Hash
 }
