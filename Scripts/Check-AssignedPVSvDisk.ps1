@@ -21,7 +21,8 @@ This script accepts pipeline input
 This script gives you a hash with computernames and assigned vdisks
 
 .NOTES
-https://github.com/DominikBritz
+Author: Dominik Britz
+Source: https://github.com/DominikBritz
 #>
 
 [CmdletBinding()]
