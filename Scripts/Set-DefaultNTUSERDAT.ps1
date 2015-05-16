@@ -1,4 +1,4 @@
-Function Set-DefaultNTUserDAT
+Function Set-DefaultNTUSERDAT
 {
     <#
     .SYNOPSIS
