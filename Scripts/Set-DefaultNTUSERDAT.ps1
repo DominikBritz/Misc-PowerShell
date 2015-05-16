@@ -20,7 +20,7 @@ Function Set-DefaultNTUSERDAT
     
     .EXAMPLE
     Set-DefaultNTUSERDAT -Unload
-    Unloads the default NTUSER.DAT from HKCU:\DEFAULT
+    Unloads the default NTUSER.DAT from HKCU\DEFAULT
 
     .NOTES
     Author: Dominik Britz
