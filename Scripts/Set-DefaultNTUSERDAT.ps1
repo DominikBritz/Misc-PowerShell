@@ -15,7 +15,7 @@ Function Set-DefaultNTUSERDAT
     Default is HKCU:\DEFAULT
     
     .EXAMPLE
-    Set-DefaultNUTSERDAT -Load -Path HKCU:\_TEMP\DEFAULT
+    Set-DefaultNUTSERDAT -Load -Path 'HKCU:\_TEMP\DEFAULT'
     Loads the default NTUSER.DAT to the path HKCU\_TEMP\DEFAULT
     
     .EXAMPLE
