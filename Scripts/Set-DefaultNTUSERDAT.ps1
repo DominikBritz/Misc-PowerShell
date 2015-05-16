@@ -13,6 +13,14 @@ Function Set-DefaultNTUSERDAT
     .PARAMETER Path
     Specifies a path in the local registry where the default ntuser.dat should be loaded. E.g. HKCU:\DEFAULT
     Default is HKCU:\DEFAULT
+    
+    .EXAMPLE
+    Set-DefaultNUTSERDAT -Load -Path HKCU:\_TEMP\DEFAULT
+    Loads the default NTUSER.DAT to the path HKCU\_TEMP\DEFAULT
+    
+    .EXAMPLE
+    Set-DefaultNTUSERDAT -Unload
+    Unloads the default NTUSER.DAT from HKCU:\DEFAULT
 
     .NOTES
     Author: Dominik Britz
