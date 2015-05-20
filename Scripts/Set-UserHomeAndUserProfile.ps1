@@ -1,4 +1,3 @@
-[CmdletBinding()]
 <#
     .SYNOPSIS
     Creates a user home and profiledirectory and sets the permissions for the user
@@ -23,7 +22,7 @@
     Source: https://github.com/DominikBritz
 #>
 
-
+[CmdletBinding()]
 PARAM
 (
     [Parameter(Mandatory=$True,ValueFromPipeline=$true)]
@@ -50,6 +49,8 @@ PARAM
 
 )
 
+Begin{}
+Process{
 Function Set-DirAcl
 {
     [CmdletBinding()]
@@ -127,3 +128,6 @@ If ($ProfileShare) {
     $AccessRule = "$domain\$username", 'Full', 'ContainerInherit, ObjectInherit', 'None', 'Allow'
     Set-DirAcl -Username $Username -Domain $Domain -Share $ProfileShare -AccessRule $AccessRule -Force $Force
 }
+}
+
+End{}
