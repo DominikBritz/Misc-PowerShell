@@ -29,6 +29,10 @@
     
     .PARAMETER ExportPath
     The path where the shortcuts will be saved. If the path does not exist, the script will create it for you.
+    
+    .NOTES
+    Author: Dominik Britz
+    Source: https://github.com/DominikBritz
 #>
 [Cmdletbinding()]
 PARAM
