@@ -1,5 +1,3 @@
-#Requires -Version 3
-#Requires -RunAsAdministrator
 <#
     .SYNOPSIS
     This script automates the creation of the necessary keyword prefer and a shortcut for Citrix Receiver to not open another session
@@ -21,19 +19,40 @@
 
     .PARAMETER Application
     By default the script will process all applications in the site. However, you can limit the processing by adding the parameter application
-    and specifying the name of an application to process. Wildcards are allowed.
+    and specifying the name of an application to process. Wildcards are allowed. The parameter can be combined with the parameter 'StudioFolder'.
     
     .PARAMETER StudioFolder
     By default the script will process all applications in the site. However, you can limit the processing by adding the parameter StudioFolder
-    and specifying the name of an application folder to process. All applications in the specified folder will be processed. Wildcards are allowed.
+    and specifying the name of an application folder to process. All applications in the specified folder will be processed. Wildcards are allowed. 
+    The parameter can be combined with the parameter 'Application'.
     
     .PARAMETER ExportPath
-    The path where the shortcuts will be saved. If the path does not exist, the script will create it for you.
+    The path where the shortcuts will be saved. If the path does not exist, the script will create it for you. Parameter is mandatory.
+
+    .EXAMPLE
+    .\Create-ReceiverKeywordpreferAndShortcut.ps1 -ExportPath C:\shortcuts
+    All applications in the site will be processed. Shortcuts will be saved to C:\shortcuts.
+
+    .EXAMPLE
+    .\Create-ReceiverKeywordpreferAndShortcut.ps1 -ExportPath C:\shortcuts -Application Chrome
+    All applications which match the string 'Chrome' will be processed, e.g. 'Google Chrome'. Shortcuts will be saved to C:\shortcuts.
+
+    .EXAMPLE
+    .\Create-ReceiverKeywordpreferAndShortcut.ps1 -ExportPath C:\shortcuts -StudioFolder Sales
+    All applications in the folder 'Sales' will be processed. Shortcuts will be saved to C:\shortcuts.
+
+    .EXAMPLE
+    .\Create-ReceiverKeywordpreferAndShortcut.ps1 -ExportPath C:\shortcuts -Application Chrome -StudioFolder Sales
+    All applications in the folder 'Sales' which match the string 'Chrome' will be processed. Shortcuts will be saved to C:\shortcuts.
     
     .NOTES
     Author: Dominik Britz
     Source: https://github.com/DominikBritz
 #>
+
+#Requires -Version 3
+#Requires -RunAsAdministrator
+
 [Cmdletbinding()]
 PARAM
 (
@@ -43,14 +62,23 @@ PARAM
     [ValidateNotNullOrEmpty()]
     $StudioFolder,
 
+    [Parameter(Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
-    [ValidateScript({Try
-                    {If (-not(Test-Path $_)) {New-Item $ExportPath -ItemType Directory}}
-                    Catch{$_.Exception.Message}        
+    [ValidateScript({
+                        Try
+                        {
+                           If (-not(Test-Path $_)) {New-Item $_ -ItemType Directory}
+                           Else {$True}
+                        }
+                        Catch
+                        {
+                           $_.Exception.Message
+                        }
                     })]
     $ExportPath
 )
 
+#region Functions
 Function Create-KeywordPrefer{
 PARAM
 (
@@ -63,7 +91,7 @@ PARAM
 
 Set-BrokerApplication -InputObject $_ -Description "KEYWORDS:prefer=$AppName"
 
-}
+} #end function
 
 Function Create-Shortcut{
 PARAM
@@ -75,10 +103,10 @@ PARAM
 )
 Try
 {
-    $DestinationPath = $(Join-Path $DestinationPath $AppName)
+    $DestinationPath = $(Join-Path $DestinationPath "$AppName.lnk")
     If (Test-Path $DestinationPath)
     {
-        Write-Error "The shortcut $DestinationPath does already exist. Your application names have to be unique as Citrix Receiver supports only one folder for the shortcuts."
+        Write-Error "The shortcut $DestinationPath does already exist. Skipping..."
     }
     Else
     {
@@ -93,8 +121,10 @@ Catch
 {
     Throw $_
 }
-}
+} #end function
+#endregion
 
+#region Script
 Try
 {
     Write-Output 'Loading Citrix PowerShell Cmdlets'
@@ -110,9 +140,9 @@ If ($Application)
 {
     Write-Output "Starting in application mode"
     Get-BrokerApplication | Where-Object {$_.Name -match $Application} | ForEach-Object {
-        Write-Output "Processing application $Application"  
-        $AppName = $AppName.replace(' ','')
-        Create-KeywordPrefer -AppObject $_ -AppName $_.ApplicationName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
+        Write-Output "Processing application $($_.ApplicationName)"  
+        $AppName = $_.Name -replace ' ','' -replace "\\","-"
+        Create-KeywordPrefer -AppObject $_ -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
         Create-Shortcut -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
     }
 }
@@ -121,9 +151,9 @@ If ($StudioFolder)
 {
     Write-Output 'Starting in folder mode'
     Get-BrokerApplication | Where-Object {$_.AdminFolderName -match $StudioFolder} | ForEach-Object {
-        Write-Output "Processing application $Application"  
-        $AppName = $AppName.replace(' ','')
-        Create-KeywordPrefer -AppObject $_ -AppName $_.ApplicationName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
+        Write-Output "Processing application $($_.ApplicationName)"  
+        $AppName = $_.Name -replace ' ','' -replace "\\","-"
+        Create-KeywordPrefer -AppObject $_ -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
         Create-Shortcut -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
     }
 }
@@ -132,20 +162,21 @@ If ($Application -and $StudioFolder)
 {
     Write-Output 'Starting in application/folder mode'
     Get-BrokerApplication | Where-Object {($_.Name -match $Application) -and ($_.AdminFolderName -match $StudioFolder)} | ForEach-Object {    
-        Write-Output "Processing application $Application"
-        $AppName = $AppName.replace(' ','')
-        Create-KeywordPrefer -AppObject $_ -AppName $_.ApplicationName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
+        Write-Output "Processing application $($_.ApplicationName)"
+        $AppName = $_.Name -replace ' ','' -replace "\\","-"
+        Create-KeywordPrefer -AppObject $_ -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
         Create-Shortcut -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
     }
 }
 
-If (-not($Application -and $StudioFolder))
+If ((-not($Application)) -and (-not($StudioFolder)))
 {
     Write-Output 'Starting in all applications mode'
     Get-BrokerApplication | ForEach-Object {    
-        Write-Output "Processing application $Application"
-        $AppName = $AppName.replace(' ','')
-        Create-KeywordPrefer -AppObject $_ -AppName $_.ApplicationName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
+        Write-Output "Processing application $($_.ApplicationName)"
+        $AppName = $_.Name -replace ' ','' -replace "\\","-"
+        Create-KeywordPrefer -AppObject $_ -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
         Create-Shortcut -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
     }
 }
+#endregion
