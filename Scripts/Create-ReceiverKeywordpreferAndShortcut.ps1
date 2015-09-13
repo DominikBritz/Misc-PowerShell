@@ -128,12 +128,13 @@ Catch
 Try
 {
     Write-Output 'Loading Citrix PowerShell Cmdlets'
-    Add-PSSnapin Citrix*
+    Add-PSSnapin Citrix* -ErrorAction Stop
 }
 Catch
 {
     Write-Error 'Could not load the needed Citrix Snapins.'
     Write-Error 'You have to run this script on a Citrix Controller.'
+    Exit
 }
 
 If ($Application)
