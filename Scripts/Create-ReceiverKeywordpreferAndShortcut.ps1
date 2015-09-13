@@ -45,9 +45,11 @@
     .\Create-ReceiverKeywordpreferAndShortcut.ps1 -ExportPath C:\shortcuts -Application Chrome -StudioFolder Sales
     All applications in the folder 'Sales' which match the string 'Chrome' will be processed. Shortcuts will be saved to C:\shortcuts.
     
-    .INPUT This script does not accept input
+    .INPUT
+    This script does not accept input
     
-    .OUTPUT This script does not provide output
+    .OUTPUT
+    This script does not provide output
     
     .NOTES
     Author: Dominik Britz
