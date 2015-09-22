@@ -148,7 +148,7 @@ If ($Application)
     Write-Output "Starting in application mode"
     Get-BrokerApplication | Where-Object {$_.Name -match $Application} | ForEach-Object {
         Write-Output "Processing application $($_.ApplicationName)"  
-        $AppName = $_.Name -replace ' ','' -replace "\\","-"
+        $AppName = $_.ApplicationName -replace ' ','' -replace "\\","-"
         Create-KeywordPrefer -AppObject $_ -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
         Create-Shortcut -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
     }
@@ -159,7 +159,7 @@ If ($StudioFolder)
     Write-Output 'Starting in folder mode'
     Get-BrokerApplication | Where-Object {$_.AdminFolderName -match $StudioFolder} | ForEach-Object {
         Write-Output "Processing application $($_.ApplicationName)"  
-        $AppName = $_.Name -replace ' ','' -replace "\\","-"
+        $AppName = $_.ApplicationName -replace ' ','' -replace "\\","-"
         Create-KeywordPrefer -AppObject $_ -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
         Create-Shortcut -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
     }
@@ -170,7 +170,7 @@ If ($Application -and $StudioFolder)
     Write-Output 'Starting in application/folder mode'
     Get-BrokerApplication | Where-Object {($_.Name -match $Application) -and ($_.AdminFolderName -match $StudioFolder)} | ForEach-Object {    
         Write-Output "Processing application $($_.ApplicationName)"
-        $AppName = $_.Name -replace ' ','' -replace "\\","-"
+        $AppName = $_.ApplicationName -replace ' ','' -replace "\\","-"
         Create-KeywordPrefer -AppObject $_ -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
         Create-Shortcut -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
     }
