@@ -143,23 +143,12 @@ Catch
     Exit
 }
 
-If ($Application)
+If ((-not($Application)) -and (-not($StudioFolder)))
 {
-    Write-Output "Starting in application mode"
-    Get-BrokerApplication | Where-Object {$_.Name -match $Application} | ForEach-Object {
-        Write-Output "Processing application $($_.ApplicationName)"  
-        $AppName = $_.ApplicationName -replace ' ','' -replace "\\","-"
-        Create-KeywordPrefer -AppObject $_ -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
-        Create-Shortcut -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
-    }
-}
-
-If ($StudioFolder)
-{
-    Write-Output 'Starting in folder mode'
-    Get-BrokerApplication | Where-Object {$_.AdminFolderName -match $StudioFolder} | ForEach-Object {
-        Write-Output "Processing application $($_.ApplicationName)"  
-        $AppName = $_.ApplicationName -replace ' ','' -replace "\\","-"
+    Write-Output 'Starting in all applications mode'
+    Get-BrokerApplication | ForEach-Object {    
+        Write-Output "Processing application $($_.ApplicationName)"
+        $AppName = $_.Name -replace ' ','' -replace "\\","-"
         Create-KeywordPrefer -AppObject $_ -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
         Create-Shortcut -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
     }
@@ -176,14 +165,29 @@ If ($Application -and $StudioFolder)
     }
 }
 
-If ((-not($Application)) -and (-not($StudioFolder)))
+If ($Application -and (-not($StudioFolder)))
 {
-    Write-Output 'Starting in all applications mode'
-    Get-BrokerApplication | ForEach-Object {    
-        Write-Output "Processing application $($_.ApplicationName)"
-        $AppName = $_.Name -replace ' ','' -replace "\\","-"
+    Write-Output "Starting in application mode"
+    Get-BrokerApplication | Where-Object {$_.Name -match $Application} | ForEach-Object {
+        Write-Output "Processing application $($_.ApplicationName)"  
+        $AppName = $_.ApplicationName -replace ' ','' -replace "\\","-"
         Create-KeywordPrefer -AppObject $_ -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
         Create-Shortcut -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
     }
 }
+
+If ($StudioFolder -and (-not($Application)))
+{
+    Write-Output 'Starting in folder mode'
+    Get-BrokerApplication | Where-Object {$_.AdminFolderName -match $StudioFolder} | ForEach-Object {
+        Write-Output "Processing application $($_.ApplicationName)"  
+        $AppName = $_.ApplicationName -replace ' ','' -replace "\\","-"
+        Create-KeywordPrefer -AppObject $_ -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
+        Create-Shortcut -AppName $AppName -AppCMD $_.CommandLineExecutable -AppArguments $_.CommandLineArguments -DestinationPath $ExportPath
+    }
+}
+
+
+
+
 #endregion
