@@ -1,4 +1,5 @@
 #Requires -Version 3
+$scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
 
 <#
 .SYNOPSIS
