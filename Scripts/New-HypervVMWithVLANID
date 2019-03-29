@@ -1,0 +1,68 @@
+# Script version: 1.1
+
+PARAM
+(
+    # Name of virtual machine
+    [Parameter(Mandatory=$true)]
+    $VMName,
+
+    # VM generation. 1 = Windows 7 and x86 machines, 2 = Windows 8 x64 and above
+    [ValidateSet(1,2)]
+    $VMGeneration = 2
+)
+#region Variables
+$VMMemoryStartupBytes = 1024MB
+$VMMemoryMinimumBytes = 512MB
+$VMParentPath = 'D:\VMs'
+$VMDiskSizeGB = 127GB
+$VMSwitch = 'Internal - VLAN 4001'
+If ($VMGeneration = 1) {$VMBootDevice = 'LegacyNetworkAdapter'} Else {{$VMBootDevice = 'NetworkAdapter'}}
+$VMProcessorCount = 1
+$VMVlanId = 4001
+
+$ErrorActionPreference = 'Stop'
+#endregion
+
+#region Main
+
+Try
+{
+    $NewVMParam = @{
+
+      Name = $VMName
+      MemoryStartUpBytes = $VMMemoryStartupBytes
+      Path = $VMParentPath
+      SwitchName =  $VMSwitch
+      NewVHDPath =  "$VMParentPath\$VMName\$VMName.vhdx"
+      NewVHDSizeBytes =  $VMDiskSizeGB
+      Verbose =  $True
+      Generation = $VMGeneration
+      BootDevice = $VMBootDevice
+    }
+
+    $VM = New-VM @NewVMParam
+
+
+    $SetVMParam = @{
+
+      ProcessorCount =  $VMProcessorCount
+      DynamicMemory =  $True
+      MemoryMinimumBytes =  $VMMemoryMinimumBytes
+      PassThru =  $True
+      Verbose =  $True
+
+    }
+
+    $VM = $VM | Set-VM @SetVMParam
+
+    Get-VMIntegrationService -VMName $VMName -Name "Time Synchronization" | Disable-VMIntegrationService
+
+    Set-VMNetworkAdapterVlan -VMName $VMName -VlanId $VMVlanId -Access
+}
+Catch
+{
+    $ErrorMessage = $_.Exception.Message
+	Write-Error $ErrorMessage 
+}
+
+#endregion
