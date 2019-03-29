@@ -43,7 +43,7 @@ Else
     
     $Body = Get-Content $LogPath -Raw
 
-    Send-Email -From "MDT1@vastlimits.com" -To "info@uberagent.com" -Subject "Failed to set MTU for $env:COMPUTERNAME" -Body $Body -MyFQDN 'ad.int.vastlimits.com' -Verbose
+    Send-Email -From "" -To "" -Subject "Failed to set MTU for $env:COMPUTERNAME" -Body $Body -MyFQDN '' -Verbose
     
     exit
 }
