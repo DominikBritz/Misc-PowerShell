@@ -4,7 +4,7 @@
 # disable confirmations
 choco feature enable -n allowGlobalConfirmation
 
-$apps = @('vscode')
+$apps = @('vscode','firefox','7zip','notepadplusplus','adobereader','vlc','putty')
 
 Foreach ($app in $apps)
 {
